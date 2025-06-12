@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Clear the screen
+clear
+
+echo "========================================"
+echo "Creating wrangler.jsonc config file ..."
+node generate-wrangler-config.js
+echo "========================================"
+echo
+
+echo "Building with Vite..."
+npx vite build
+echo
+
+echo "Testing local ..."
+wrangler dev --remote --ip 0.0.0.0

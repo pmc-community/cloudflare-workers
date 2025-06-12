@@ -1,0 +1,36 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "src",
+		"declaration": true,
+		"sourceMap": true,
+		"esModuleInterop": true,
+		"inlineSourceMap": false,
+		"lib": ["esnext"],
+		"listEmittedFiles": false,
+		"listFiles": false,
+		"moduleResolution": "node",
+		"noFallthroughCasesInSwitch": true,
+		"pretty": true,
+		"resolveJsonModule": true,
+		"rootDir": ".",
+		"skipLibCheck": true,
+		"strict": false,
+		"traceResolution": false,
+		"outDir": "./dist",
+		"target": "esnext",
+		"module": "esnext",
+		"types": [
+			"@types/node",
+			"@types/service-worker-mock",
+			"@cloudflare/workers-types/2023-07-01"
+		],
+		"paths": {
+      		"cloudflare:workers": ["node_modules/@cloudflare/workers-types"]
+    	}
+	},
+	"include": [
+		"src/**/*"
+	]
+}

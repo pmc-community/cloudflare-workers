@@ -1,0 +1,37 @@
+name: Copy Last Commit to PMC Community
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copy-last-commit:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+        with:
+          repository: nothreat-dev/nothreat-cloudflare-workers
+          ref: main
+
+      - name: Prepare destination repository
+        run: |
+          git config --global user.name 'florinhoinarescu'
+          git config --global user.email 'florin_hoinarescu@yahoo.com'
+          git clone https://github.com/pmc-community/cloudflare-workers.git ../destination-repo
+          cd ../destination-repo
+          git checkout -B main
+
+      - name: Copy last commit content
+        run: |
+          # Copy content from the source repository to the destination repository
+          rsync -a --exclude='.git' ./ ../destination-repo/
+
+          # Navigate to the destination repository
+          cd ../destination-repo
+          git add .
+          git commit -m "Sync last commit from main branch of nothreat-dev/nothreat-cloudflare-workers"
+          git push -f https://x-access-token:${{ secrets.PAT_TO_COPY_TO_COMMUNITY }}@github.com/pmc-community/cloudflare-workers.git main
+
+      - name: Clean up
+        run: |
+          rm -rf ../destination-repo

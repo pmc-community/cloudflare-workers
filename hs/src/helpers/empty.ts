@@ -1,0 +1,2 @@
+// Optional stub
+export default {};

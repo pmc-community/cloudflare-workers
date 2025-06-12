@@ -1,0 +1,94 @@
+/*
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+ {
+	"$schema": "node_modules/wrangler/config-schema.json",
+
+	"compatibility_flags": [
+    	"nodejs_compat"
+  	],
+
+	// HEADS UP!!! CHANGE THIS TO MODIFY THE WORKER ROUTE TO <name>.ntapi.workers.dev
+	"name": "hs", 
+
+	"main": "src/index.ts",
+	
+	"compatibility_date": "2025-04-14",
+	"observability": {
+		"enabled": true
+	},
+	/**
+	 * Smart Placement
+	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
+	 */
+	"placement": { "mode": "smart" },
+
+	/**
+	 * Bindings
+	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
+	 * databases, object storage, AI inference, real-time communication and more.
+	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
+	 */
+
+	"kv_namespaces": [
+    	{
+      		"binding": "${KV_NAME}",
+      		"id": "${PROD_KV_ID}",
+			"preview_id": "${PREVIEW_KV_ID}"
+    	}
+  	],
+
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "STUCK_DEALS_PER_STAGE_DO",
+				"class_name": "StuckDealsPerStageDO"
+			},
+			{
+				"name": "STUCK_DEALS_PER_OWNER_DO",
+				"class_name": "StuckDealsPerOwnerDO"
+			}
+		]
+	},
+
+	"migrations": [
+		{
+			"tag": "v2",
+			"new_sqlite_classes": ["StuckDealsPerStageDO"]
+		},
+		{
+			"tag": "v3",
+			"new_sqlite_classes": ["StuckDealsPerOwnerDO"]
+		}
+	],
+
+	"vars": { 
+		"SLACK_TEST_MESSAGE": ":wave: This is a test message ...",
+		"HS_VALIDATE_SIGNATURE": false,
+		"SLACK_VALIDATE_SIGNATURE": true,
+		"HS_TO_SLACK": true,
+		"HS_TO_JIRA": false
+	},
+
+	"triggers": {
+		"crons": [
+			"0 9 * * *", // dealsStuckPerStage data load from hs - daily, 09:00 GMT (0 9 * * *)
+			"5 9 * * *", // dealsStuckPerOwner data load from hs - daily, 09:05 GMT (5 9 * * *)
+			"15 9 * * 1", // dealsStuckPerStage generate report - each monday morning, 09:15 GMT (15 9 * * 1)
+			"20 9 * * 1" // dealsStuckPerStage generate report - each monday morning, 09:15 GMT (20 9 * * 1)
+		]
+  	},
+
+	/**
+	 * Static Assets
+	 * 
+	 */
+	// "assets": { "directory": "./public/", "binding": "ASSETS" },
+
+	/**
+	 * Service Bindings (communicate between multiple Workers)
+	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
+	 */
+	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
+}

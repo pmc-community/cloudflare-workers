@@ -1,0 +1,47 @@
+# For more details on how to configure Wrangler:
+# https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "hs"
+main = "src/index.ts"
+compatibility_date = "2025-04-14"
+compatibility_flags = [ "nodejs_compat" ]
+
+# Enable smart placement
+[placement]
+mode = "smart"
+
+# Observability (Metrics/Logs)
+[observability]
+enabled = true
+
+# Triggers (Cron jobs)
+[triggers]
+crons = ["* * * * *"]
+
+# Durable Object bindings
+[[durable_objects.bindings]]
+name = "STUCK_DEALS_PER_STAGE_DO"
+class_name = "StuckDealsPerStageDO"
+
+# Durable Object migrations
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["StuckDealsPerStageDO"]
+
+# KV Namespace bindings
+[[kv_namespaces]]
+binding = "${KV_NAME}"
+id = "${PROD_KV_ID}"
+preview_id = "${PREVIEW_KV_ID}"
+
+# Environment variables (not secrets)
+[vars]
+SLACK_TEST_MESSAGE = "This is a test message ..."
+HS_VALIDATE_SIGNATURE = false
+SLACK_VALIDATE_SIGNATURE = false
+HS_TO_SLACK = true
+HS_TO_JIRA = false
+
+# Required to enable scheduled() + default export + named exports
+module = true
+
